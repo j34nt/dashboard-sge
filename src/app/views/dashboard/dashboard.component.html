@@ -1,0 +1,273 @@
+<c-container>
+ 
+</c-container>
+<c-card class="mb-4">
+  <c-card-body *ngIf="mainChart">
+    <c-row>
+      <c-col sm="5">
+        <select class="w-50" [disabled]="isClient" [(ngModel)]="idParking" (change)="selectParking()" cSelect id="inputParking-1" >
+            <option [value]="parking.id" *ngFor="let parking of listParking">{{parking.description}}</option>
+        </select>
+    </c-col>
+      <c-col class="d-none d-md-block" sm="3">
+        <form [formGroup]="trafficRadioGroup">
+          <c-button-group class="float-end me-3" role="group">
+            <ng-container *ngFor="let proper of dataProperty">
+              <input
+                class="btn-check"
+                formControlName="trafficRadio"
+                type="radio"
+                [value]="proper.property"
+              />
+              <label
+                (click)="setTrafficPeriod(proper.property)"
+                cButton
+                cFormCheckLabel
+                color="secondary"
+                
+                variant="outline"
+              >{{proper.label}}</label>              
+            </ng-container>
+
+          </c-button-group>
+        </form>
+      </c-col>
+      <c-col class=" d-flex" sm="4">
+        <div class="dp-hidden position-absolute">
+          <div class="input-group">
+            <input
+              name="datepicker"
+              class="form-control"
+              ngbDatepicker
+              #datepicker="ngbDatepicker"
+              [autoClose]="'outside'"
+              (dateSelect)="onDateSelection($event)"
+              [displayMonths]="2"
+              [dayTemplate]="t"
+              outsideDays="hidden"
+              [startDate]="fromDate!"
+              tabindex="-1"
+            />
+            <ng-template #t let-date let-focused="focused">
+              <span
+                class="custom-day"
+                [class.focused]="focused"
+                [class.range]="isRange(date)"
+                [class.faded]="isHovered(date) || isInside(date)"
+                (mouseenter)="hoveredDate = date"
+                (mouseleave)="hoveredDate = null"
+              >
+                {{ date.day }}
+              </span>
+            </ng-template>
+          </div>
+        </div>
+        <div class="input-group w-50">
+          <input
+            #dpFromDate
+            class="form-control"
+            placeholder="yyyy-mm-dd"
+            name="dpFromDate"
+            [value]="formatter.format(fromDate)"
+            (input)="fromDate = validateInput(fromDate, dpFromDate.value)"
+          />
+          <button class="btn btn-outline-secondary bi bi-calendar3" (click)="datepicker.toggle()" type="button"></button>
+        </div>
+        <div class="w-50">
+          <div class="input-group">
+            <input
+              #dpToDate
+              class="form-control"
+              placeholder="yyyy-mm-dd"
+              name="dpToDate"
+              [value]="formatter.format(toDate)"
+              (input)="toDate = validateInput(toDate, dpToDate.value)"
+            />
+            <button class="btn btn-outline-secondary bi bi-calendar3" (click)="datepicker.toggle()" type="button"></button>
+          </div>
+        </div>
+      </c-col>
+    </c-row>
+    <c-chart *ngIf="mainChartTemp?.data !== undefined; else emptyData"
+      [data]="mainChartTemp.data"
+      [height]="300"
+      [ngStyle]="{ 'marginTop.px': 40 }"
+      [options]="mainChartTemp.options"
+      [type]="mainChartTemp.type"
+    >
+      Main chart Temp
+    </c-chart>
+  </c-card-body>
+  <c-card-footer *ngIf="dataSummary">
+    <c-row class="text-center" [md]="5" [xs]="1">
+      <c-col *ngFor="let payment of dataSummaryEvolution" class="mb-sm-2 mb-0">
+        <div class="text-medium-emphasis">{{payment.name}}</div>
+        <strong>{{payment[selectedDataProperty] + ' (' + payment.percentage + '%)'}}</strong>
+        <c-progress class="mt-2" thin>
+          <c-progress-bar [color]="payment.percentageClass" [value]="payment.percentage"></c-progress-bar>
+        </c-progress>
+      </c-col>
+    </c-row>
+  </c-card-footer>
+</c-card>
+
+<!-- <app-widgets-brand [withCharts]="true"></app-widgets-brand> -->
+
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>Salidas vs Entradas</c-card-header>
+      <c-card-body>
+        <c-row>
+          <c-col md="6" xl="6" xs="12">
+            <c-row>
+              <c-col sm="12">
+                <div
+                  class="border-start border-start-4 border-start-info py-1 px-3 mb-3"
+                >
+                  <div class="text-medium-emphasis small">Salidas</div>
+                  <div class="fs-5 fw-semibold">{{summaryInOut?.summaryOut}}</div>
+                </div>
+              </c-col>
+            </c-row>
+
+            <hr class="mt-0" />
+
+            <div *ngFor="let out of summaryOutDetail" class="progress-group mb-4">
+              <div class="progress-group-header">
+                <span >Módulo {{out.module + ': ' + out.count}}</span>
+                <span class="ms-auto font-semibold">{{out?.percentage}}%</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin>
+                  <c-progress-bar color="info" value="{{out.percentage}}"></c-progress-bar>
+                </c-progress>
+              </div>
+            </div>
+          </c-col>
+
+          <c-col md="6" xl="6" xs="12">
+            <c-row>
+              <c-col sm="12">
+                <div class="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
+                  <div class="text-medium-emphasis small">Entradas</div>
+                  <div class="fs-5 fw-semibold">{{summaryInOut?.summaryIn}}</div>
+                </div>
+              </c-col>
+            </c-row>
+
+            <hr class="mt-0" />
+
+            <div *ngFor="let entrance of summaryInDetail" class="progress-group mb-4">
+              <div class="progress-group-header">
+                <!-- <svg cIcon class="icon icon-lg me-2" name="cilUser"></svg> -->
+                <!-- <span>{{}}</span> -->
+                <span>Módulo {{entrance.module + ': ' + entrance.count}}</span>
+                <span class="ms-auto font-semibold">{{entrance?.percentage}}%</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin>
+                  <c-progress-bar color="warning" value="{{entrance.percentage}}"></c-progress-bar>
+                </c-progress>
+              </div>
+            </div>
+            <!-- <div class="divider d-flex justify-content-center">
+              <button
+                cButton
+                class="text-muted btn-link"
+                color="transparent"
+                size="sm"
+                type="button"
+              >
+                <svg cIcon name="cil-options"></svg>
+              </button>
+            </div> -->
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>
+        <div class="d-flex justify-content-between">
+          <span>Detalle Tickets</span>
+          <span><strong>Total: {{summaryDetailData.totalTicket}} - Monto: {{summaryDetailData.totalAmount}} MXN</strong></span>
+           
+        </div>
+      </c-card-header>
+      <c-card-body>
+        <table
+          [hover]="true"
+          [responsive]="true"
+          [striped]="true"
+          align="middle"
+          cTable
+          class="mb-0 border"
+        >
+          <thead cTableColor="light">
+            <tr>
+              <!-- <th class="text-center">
+                <svg cIcon name="cilPeople"></svg>
+              </th> -->
+              <th>Ingreso</th>
+              <th>Salida</th>
+              <!-- <th>Tipo Pago</th> -->
+              <th>Pago <small class="small text-medium-emphasis text-nowrap"> MXN </small></th>
+              <th>Duración <small class="small text-medium-emphasis text-nowrap"> HR </small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ticektDetail of detailTickest; index as i">
+              <!-- <td class="text-center">
+                <c-avatar
+                  size="md"
+                  src="{{ ticektDetail.avatar }}"
+                  status="{{ ticektDetail.status }}"
+                ></c-avatar>
+              </td> -->
+              <td>
+                <div>{{ ticektDetail.value }}</div>
+                <div class="small text-medium-emphasis text-nowrap">
+                  <span>
+                    Modulo: {{ ticektDetail.module }} | Fecha: {{ (ticektDetail.date_in ? (ticektDetail.date_in | date:'dd/MM/yyyy hh:mm:ss') : 'Sin Fecha') }}
+                  </span>
+                </div>
+                <!-- <span>{{ticektDetail.value}}</span> -->
+              </td>
+              <td>
+                <div>{{ ((ticektDetail.payment && ticektDetail.payment[0]) ? ticektDetail.payment[0] : ticektDetail.payment_id) }}</div>
+                <div class="small text-medium-emphasis text-nowrap">
+                  <span>
+                    {{ ticektDetail.value_output }} | Fecha: {{ (ticektDetail.date_out ? (ticektDetail.date_out | date:'dd/MM/yyyy hh:mm:ss') : 'Sin Fecha') }}
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex justify-content-between">
+                  <div class="float-start">
+                    <strong>{{ticektDetail.amount}}</strong>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>{{ ticektDetail.duration }}</div>
+                <!-- <svg cIcon name="cibCc{{ ticektDetail.payment }}" size="xl"></svg> -->
+              </td>
+              <!-- <td>
+                <div class="small text-medium-emphasis">Last login</div>
+                <div class="fw-semibold text-nowrap">{{ ticektDetail.activity }}</div>
+              </td> -->
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+
+<ng-template #emptyData>
+  <c-alert class="mt-4" color="secondary">No se encontraon <strong>Datos</strong> en la fecha seleccionada!</c-alert>
+</ng-template>

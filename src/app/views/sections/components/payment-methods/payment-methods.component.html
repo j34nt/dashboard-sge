@@ -1,0 +1,151 @@
+<c-container>
+    <!-- <i>{{'eb3b' | hexToDec}}</i>
+    <i class="material-icons">&#xeb3b;</i>
+    <i class="material-icons">{{iconName}}</i> -->
+    <c-row class="justify-content-between">
+        <c-col xs="8">
+            <select [attr.disabled]="idParking && idParking.length > 0" class="w-50" [(ngModel)]="idParking" (change)="selectParking()" cSelect id="inputParking-1" >
+                <option [value]="parking.id" *ngFor="let parking of parkingsList">{{parking.description}}</option>
+            </select>
+        </c-col>
+        <c-col xs="4">
+            <button
+            (click)="toggleEditPayment()"
+            cButton
+            class="btn btn-transparent"
+            >
+            Agregar
+        </button>
+    </c-col>
+    </c-row>
+</c-container>
+
+<!-- <div class="d-flex flex-between w-100">
+    
+</div> -->
+<table class="table table-striped" cTable *ngIf="paymentList.length > 0">
+    <thead>
+        <tr>
+            <!-- <th scope="col">ID</th> -->
+            <th scope="col">Nombre</th>
+            <th scope="col">Activo</th>
+            <!-- <th scope="col">Rol</th>
+            <th scope="col">Estacionamiento</th> -->
+            <th scope="col">Acciones</th> 
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let payment of paymentList">
+            <!-- <td>{{payment.id}}</td> -->
+            <td>{{payment.description}}</td>
+            <td>
+                <svg [cIcon]="payment.enabled == true ? icons.cilCheck : icons.cilX" color="green" size="sm" title="Habilitado"></svg>
+                <!-- <svg [cIcon]="icons.cilX" color="green" size="sm" title="Habilitado"></svg> -->
+            </td>
+            <!-- <td>{{payment.role}}</td>
+            <td>{{payment.parking_id.description}}</td> -->
+            <td class="d-flex justify-content-around">
+                <button cButton style="color: rgba(255, 255, 255, 0.87);" color="info" (click)="editPayment(payment)" class="d-flex align-items-center">
+                    <svg [cIcon]="icons.cilPencil" color="white" size="sm" title="List Icon"></svg>
+                    <span class="ms-1">Editar</span>
+                    
+                </button>
+                <button cButton color="danger" style="color: rgba(255, 255, 255, 0.87);" (click)="confirmDeletePayment(payment)" class="d-flex align-items-center">
+                    <svg [cIcon]="icons.cilDelete" size="sm" title="List Icon"></svg>
+                    <span class="ms-1" >Eliminar</span>
+                </button>
+                
+            </td>
+        </tr>
+    </tbody>
+
+</table>
+
+<c-modal id="paymentModal" [visible]="visiblePayment" (visibleChange)="handleEditPaymentChange($event)">
+    <c-modal-header>
+      <h5 cModalTitle>Editar Pago</h5>
+      <button (click)="toggleEditPayment()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+        <form name="paymentForm" cForm [formGroup]="formPayment">
+            <div class="mb-3">
+                <label cLabel for="inputParking-1">Estacionamiento</label>
+                <!-- <input cFormControl id="inputParking-1" formControlName="parking_id" type="text"> -->
+                <select [attr.disabled]="idParking && idParking.length > 0" cSelect id="inputParking-1" formControlName="parking_id">
+                    <option [value]="parking.id" *ngFor="let parking of parkingsList">{{parking.description}}</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label cLabel for="inputdescription-1">Descripción</label>
+                <input cFormControl id="inputdescription-1" formControlName="description" type="text">
+            </div>
+            <c-row class="g3">
+                <c-col class="mb-3">
+                    <label cLabel for="inputFirstRate-1">Primer Pago</label>
+                    <input cFormControl id="inputFirstRate-1" formControlName="first_rate" type="number">
+                </c-col>
+                <c-col class="mb-3">
+                    <label cLabel for="inputFirstTolerance-1">Primera Tolerancia</label>
+                    <input cFormControl id="inputFirstTolerance-1" formControlName="first_tolerance" type="number">
+                </c-col>
+
+            </c-row>
+            <c-row class="g3">
+                <c-col class="mb-3">
+                    <label cLabel for="inputSecondRate-1">Segundo Pago</label>
+                    <input cFormControl id="inputSecondRate-1" formControlName="second_rate" type="number">
+                </c-col>
+                <c-col class="mb-3">
+                    <label cLabel for="inputSecondTolerance-1">Segunda Tolerancia</label>
+                    <input cFormControl id="inputSecondTolerance-1" formControlName="second_tolerance" type="number">
+                </c-col>
+
+            </c-row>
+            <c-row class="g3">
+                <c-col class="mb-3">
+                    <label cLabel for="inputThirdRate-1">Tercer Pago</label>
+                    <input cFormControl id="inputThirdRate-1" formControlName="third_rate" type="number">
+                </c-col>
+                <c-col class="mb-3">
+                    <label cLabel for="inputthirdTolerance-1">Tercera Tolerancia</label>
+                    <input cFormControl id="inputthirdTolerance-1" formControlName="third_tolerance" type="number">
+                </c-col>
+
+            </c-row>
+            <c-row class="g3">
+                <c-col class="mb-3">
+                    <label cLabel for="inputthirdTolerance-1">Iconos</label>
+                    <select  cSelect id="inputIcons-1" formControlName="icon_temp" (change)="selectIcon()">
+                        <option [value]="icon.name" *ngFor="let icon of iconsList">
+                            <span class="material-icons">{{icon.name}}</span>
+                        </option>
+                    </select>
+                </c-col>
+                <c-col class="mb-3">
+                    <label cLabel for="inputthirdTolerance-1">Selección</label>
+                    <i class="material-icons">{{iconName}}</i>
+                </c-col>
+
+            </c-row>
+            
+        </form>
+
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleEditPayment()" cButton color="secondary">
+        Cancelar
+      </button>
+      <button [disabled]="saving" (click)="savePayment()" cButton color="primary">Guardar</button>
+    </c-modal-footer>
+  </c-modal>
+  <c-toaster [placement]="positionToast" class="p-3">
+    <c-toast [color]="colorToast" [autohide]="true" [fade]="false" [visible]="showToast">
+      <c-toast-header>
+        <!-- <toast-sample-icon></toast-sample-icon> -->
+        {{titleToast}}
+      </c-toast-header>
+      <c-toast-body>{{messageToast}}</c-toast-body>
+    </c-toast>
+
+</c-toaster>

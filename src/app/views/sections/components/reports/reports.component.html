@@ -1,0 +1,124 @@
+<c-container>
+    <!-- <i>{{'eb3b' | hexToDec}}</i>
+    <i class="material-icons">&#xeb3b;</i>
+    <i class="material-icons">{{iconName}}</i> -->
+    <c-row class="justify-content-between">
+        <c-col xs="8">
+            <select [attr.disabled]="idParking && idParking.length > 0" class="w-50" [(ngModel)]="idParking" (change)="selectParking()" cSelect id="inputParking-1" >
+                <option [value]="parking.id" *ngFor="let parking of parkingsList">{{parking.description}}</option>
+            </select>
+        </c-col>
+        <c-col class=" d-flex" xs="4">
+            <div class="dp-hidden position-absolute">
+              <div class="input-group">
+                <input
+                  name="datepicker"
+                  class="form-control"
+                  ngbDatepicker
+                  #datepicker="ngbDatepicker"
+                  [autoClose]="'outside'"
+                  (dateSelect)="onDateSelection($event)"
+                  [displayMonths]="2"
+                  [dayTemplate]="t"
+                  outsideDays="hidden"
+                  [startDate]="fromDate!"
+                  tabindex="-1"
+                />
+                <ng-template #t let-date let-focused="focused">
+                  <span
+                    class="custom-day"
+                    [class.focused]="focused"
+                    [class.range]="isRange(date)"
+                    [class.faded]="isHovered(date) || isInside(date)"
+                    (mouseenter)="hoveredDate = date"
+                    (mouseleave)="hoveredDate = null"
+                  >
+                    {{ date.day }}
+                  </span>
+                </ng-template>
+              </div>
+            </div>
+            <div class="input-group w-50">
+              <input
+                #dpFromDate
+                class="form-control"
+                placeholder="yyyy-mm-dd"
+                name="dpFromDate"
+                [value]="formatter.format(fromDate)"
+                (input)="fromDate = validateInput(fromDate, dpFromDate.value)"
+              />
+              <button class="btn btn-outline-secondary" (click)="datepicker.toggle()" type="button">
+                <svg [cIcon]="icons.cilCalendar" color="white" size="sm" title="Calendar"></svg>
+              </button>
+            </div>
+            <div class="w-50">
+              <div class="input-group">
+                <input
+                  #dpToDate
+                  class="form-control"
+                  placeholder="yyyy-mm-dd"
+                  name="dpToDate"
+                  [value]="formatter.format(toDate)"
+                  (input)="toDate = validateInput(toDate, dpToDate.value)"
+                />
+                <button class="btn btn-outline-secondary" (click)="datepicker.toggle()" type="button">
+                    <svg [cIcon]="icons.cilCalendar" color="white" size="sm" title="Calendar"></svg>
+                </button>
+              </div>
+            </div>
+          </c-col>
+    </c-row>
+</c-container>
+
+<c-card class="mt-4 mb-2">
+    <c-card-header>
+      <div class="d-flex justify-content-between">
+        <span>Detalle Tickets</span>
+        <span><strong>Total: {{totalTicket}} - Página: {{currentPage}} </strong></span>
+         
+      </div>
+    </c-card-header>
+    <c-card-body>
+        <table class="table table-striped" cTable *ngIf="ticketsList.length > 0">
+            <thead>
+                <tr>
+                    <!-- <th scope="col">ID</th> -->
+                    <th scope="col">Llegada</th>
+                    <th scope="col">Salida</th>
+                    <!-- <th scope="col">Rol</th>
+                    <th scope="col">Estacionamiento</th> -->
+                    <th scope="col">Tiempo</th> 
+                    <th scope="col">Pago</th> 
+        
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let ticket of ticketsList">
+                    <td>{{ticket.value}}</td>
+                    <td>{{ticket.value_output}}</td>
+                    <td>{{ticket.time}}</td>
+                    <td>{{ticket.amount}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </c-card-body>
+</c-card>
+
+
+<c-pagination align="center" aria-label="Page navigation example">
+    <li [disabled]="currentPage == 0" cPageItem (click)="changePage(-limit)">
+      <a cPageLink>Anterior</a>
+    </li>
+    <!-- <li cPageItem>
+      <a cPageLink>1</a>
+    </li>
+    <li cPageItem>
+      <a cPageLink>2</a>
+    </li>
+    <li cPageItem>
+      <a cPageLink>3</a>
+    </li> -->
+    <li [disabled]="(currentPage + limit) > totalTicket" cPageItem (click)="changePage(+limit)">
+      <a cPageLink>Siguiente</a>
+    </li>
+  </c-pagination>

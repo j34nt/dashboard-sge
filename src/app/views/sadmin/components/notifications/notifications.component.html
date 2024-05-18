@@ -1,0 +1,88 @@
+<div class="d-flex flex-end w-100">
+    <button
+        (click)="sendNotification()"
+            cButton
+            class="btn btn-transparent"
+    >
+    Enviar
+    </button>
+    
+</div>
+<form name="notificationForm" cForm [formGroup]="formNotification">
+   
+    <!-- <div class="mb-3">
+        <label cLabel for="inputdisplayName-1">Nombre Completo</label>
+        <input cFormControl id="inputdisplayName-1" formControlName="display_name" type="text">
+    </div> -->
+    <c-row class="g3">
+        <c-col class="mb-3">
+            <label cLabel for="inputParking-1">Estacionamiento</label>
+            <!-- <input cFormControl id="inputParking-1" formControlName="parking_id" type="text"> -->
+            <select cSelect id="inputParking-1" formControlName="idParking">
+                <option value="">TODOS</option>
+                <option [value]="parking.id" *ngFor="let parking of listParking">{{parking.description}}</option>
+            </select>
+        </c-col>
+        <c-col class="mb-3">
+            <label cLabel for="inputParking-1">Plantilla</label>
+            <!-- <input cFormControl id="inputParking-1" formControlName="parking_id" type="text"> -->
+            <select cSelect id="inputParking-1" formControlName="type">
+                <option value="">Seleccione una plantilla</option>
+                <option [value]="template.id" *ngFor="let template of templateList">{{template.description}}</option>
+            </select>
+        </c-col>
+    </c-row>
+    <c-row class="g3">
+        <c-col class="mb-3">
+            <label cLabel for="inputName-1">Título</label>
+            <input cFormControl id="inputTitle-1" formControlName="title" type="text">
+
+        </c-col>
+        <c-col class="mb-3">
+            <label cLabel for="inputName-1">Description</label>
+            <input cFormControl id="inputTitle-1" formControlName="description" type="text">
+
+        </c-col>
+    </c-row>
+   
+    <div class="mb-3">
+        <label cLabel for="inputLastName-1">Imagen</label>
+        <input cFormControl type="file" (change)="uploadImage($event)" >
+        <!-- <input cFormControl id="inputDescription-1" formControlName="description" type="text"> -->
+    
+    </div>
+    <div class="mb-3">
+        <label cLabel for="inputLastName-1">Detalle</label>
+        <textarea cFormControl formControlName="detail" name="" id="" cols="30" rows="4"></textarea>
+        <!-- <input cFormControl id="inputDescription-1" formControlName="description" type="text"> -->
+    
+    </div>
+</form>
+
+<c-modal id="liveNotificationModal" [visible]="visible" (visibleChange)="handleLiveNotificationChange($event)">
+    <c-modal-header>
+        <h5 cModalTitle>Notificación</h5>
+        <button (click)="toggleLiveNotification()" cButtonClose></button>
+      </c-modal-header>
+      <c-modal-body>
+        <c-row>
+            <c-col>
+                <label cLabel>Correcto</label>
+                <ul cListGroup>
+                    <li *ngFor="let client of clientsSucces" [color]="'success'" cListGroupItem>
+                      {{client.client}}
+                    </li>
+                  </ul>
+            </c-col>
+            <c-col>
+                <label cLabel>Incorrecto</label>
+                <ul cListGroup>
+                    <li *ngFor="let client of clientsError" [color]="'danger'" cListGroupItem>
+                      {{client.client}}
+                    </li>
+                  </ul>
+            </c-col>
+        </c-row>
+      </c-modal-body>
+
+</c-modal>

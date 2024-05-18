@@ -1,0 +1,99 @@
+<div class="d-flex flex-end w-100">
+    <button
+            (click)="toggleLiveDemo()"
+            cButton
+            class="btn btn-transparent"
+    >
+    Agregar
+    </button>
+</div>
+<table class="table table-striped" cTable *ngIf="listParking.length > 0">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Estacionamiento</th>
+            <th scope="col">Ticket Extraviado</th>
+            <th scope="col">Acciones</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let parking of listParking">
+            <td>{{parking.id}}</td>
+            <td>{{parking.description}}</td>
+            <td>{{parking.address}}</td>
+            <td>{{parking.lost_ticket}}</td>
+            <td class="d-flex justify-content-around">
+                <button cButton style="color: rgba(255, 255, 255, 0.87);" color="info" (click)="editParking(parking)" class="d-flex align-items-center">
+                    <svg [cIcon]="icons.cilPencil" color="white" size="sm" title="List Icon"></svg>
+                    <span class="ms-1">Editar</span>
+                    
+                </button>
+                <button cButton color="danger" style="color: rgba(255, 255, 255, 0.87);" (click)="confirmDeleteParking(parking)" class="d-flex align-items-center">
+                    <svg [cIcon]="icons.cilDelete" size="sm" title="List Icon"></svg>
+                    <span class="ms-1" >Eliminar</span>
+                </button>
+                
+            </td>
+        </tr>
+    </tbody>
+
+</table>
+
+<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+    <c-modal-header>
+      <h5 cModalTitle>Modal title</h5>
+      <button (click)="toggleLiveDemo()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+        <form cForm [formGroup]="formParking">
+            <div class="mb-3">
+                <label cLabel for="inputEmail-1">Nombre</label>
+                <input cFormControl id="inputName-1" formControlName="description" type="text">
+                <!-- <div cFormText>
+                  We'll never share your email with anyone else
+                </div> -->
+              </div>
+            <div class="mb-3">
+                <label cLabel for="inputEmail-1">Dirección</label>
+                <input cFormControl id="inputAddress-1" formControlName="address" type="text">
+                <!-- <div cFormText>
+                  We'll never share your email with anyone else
+                </div> -->
+              </div>
+              <div class="mb-3">
+                <label cLabel for="inputPassword-1">Ticket Extraviado</label>
+                <input cFormControl id="inputLostTicket-1" formControlName="lost_ticket" type="number">
+              </div>
+              <!-- <c-form-check class="mb-3">
+                <input cFormCheckInput id="checkMeOut-1" type="checkbox">
+                <label cFormCheckLabel for="checkMeOut-1">Check me out</label>
+              </c-form-check> -->
+              <!-- <input cButton color="primary" type="submit"> -->
+        </form>
+
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleLiveDemo()" cButton color="secondary">
+        Cancelar
+      </button>
+      <button [disabled]="saving" (click)="saveParking()" cButton color="primary">Guardar</button>
+    </c-modal-footer>
+  </c-modal>
+<c-modal id="deleteConfirmModal" [visible]="visibleDelete" (visibleChange)="handleDeleteConfirmChange($event)">
+    <c-modal-header>
+      <h5 cModalTitle>Borrar Estacionamiento: {{parkingToDelete?.description}}</h5>
+      <button (click)="toggleDeleteModal()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+        <p>¿Estás seguro que deseas <strong>eliminar el estacionamiento?</strong> Una vez realizado, no se podrá revertir.</p>
+
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleDeleteModal()" cButton color="secondary">
+        Cancelar
+      </button>
+      <button [disabled]="saving" (click)="deleteParking()" cButton color="primary">Eliminar</button>
+    </c-modal-footer>
+  </c-modal>

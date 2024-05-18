@@ -1,0 +1,125 @@
+<div class="d-flex flex-end w-100">
+    <button
+        (click)="toggleEditUser()"
+            cButton
+            class="btn btn-transparent"
+    >
+    Agregar
+    </button>
+</div>
+<table class="table table-striped" cTable *ngIf="usersList.length > 0">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Email</th>
+            <th scope="col">Rol</th>
+            <th scope="col">Estacionamiento</th>
+            <th scope="col">Acciones</th> 
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let user of usersList">
+            <td>{{user.id}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.role}}</td>
+            <td>{{user.parking_id.description}}</td>
+            <td class="d-flex justify-content-around">
+                <button cButton style="color: rgba(255, 255, 255, 0.87);" color="info" (click)="editUser(user)" class="d-flex align-items-center">
+                    <svg [cIcon]="icons.cilPencil" color="white" size="sm" title="List Icon"></svg>
+                    <span class="ms-1">Editar</span>
+                    
+                </button>
+                <button cButton color="danger" style="color: rgba(255, 255, 255, 0.87);" (click)="confirmDeleteUser(user)" class="d-flex align-items-center">
+                    <svg [cIcon]="icons.cilDelete" size="sm" title="List Icon"></svg>
+                    <span class="ms-1" >Eliminar</span>
+                </button>
+                
+            </td>
+        </tr>
+    </tbody>
+
+</table>
+
+<c-modal id="liveDemoModal" [visible]="visibleEdit" (visibleChange)="handleEditUserChange($event)">
+    <c-modal-header>
+      <h5 cModalTitle>Editar Usuario</h5>
+      <button (click)="toggleEditUser()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+        <form name="userForm" cForm [formGroup]="formUser">
+            <div class="mb-3">
+                <label cLabel for="inputParking-1">Estacionamiento</label>
+                <!-- <input cFormControl id="inputParking-1" formControlName="parking_id" type="text"> -->
+                <select [attr.disabled]="idParking && idParking.length > 0" cSelect id="inputParking-1" formControlName="parking_id">
+                    <option [value]="parking.id" *ngFor="let parking of parkingsList">{{parking.description}}</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label cLabel for="inputdisplayName-1">Nombre Completo</label>
+                <input cFormControl id="inputdisplayName-1" formControlName="display_name" type="text">
+            </div>
+            <c-row class="g3">
+                <c-col class="mb-3">
+                    <label cLabel for="inputName-1">Nombre</label>
+                    <input cFormControl id="inputName-1" formControlName="name" type="text">
+                </c-col>
+                <c-col class="mb-3">
+                    <label cLabel for="inputLastName-1">Apellido</label>
+                    <input cFormControl id="inputLastName-1" formControlName="last_name" type="text">
+                </c-col>
+
+            </c-row>
+              <!-- <div class="d-flex">
+
+              </div> -->
+            <div class="mb-3">
+                <label cLabel for="inputEmail-1">Email</label>
+                <input cFormControl id="inputEmail-1" formControlName="email" type="text">
+            </div>
+            <div class="mb-3" *ngIf="!formUser.controls['uid'].value || formUser.controls['uid'].value?.length == 0">
+                <label cLabel for="inputPassword-1">Contraseña</label>
+                <input cFormControl id="inputPassword-1" formControlName="pass" type="password">
+            </div>
+            <c-row class="g3">
+                <c-col class="mb3">
+                    <label cLabel for="inputModule-1">Modulo</label>
+                    <input cFormControl id="inputModule-1" formControlName="module" type="number">
+                </c-col>
+                <c-col class="mb3">
+                    <label cLabel for="inputRole-1">Rol</label>
+                    <!-- <input cFormControl id="inputRole-1" formControlName="role" type="text"> -->
+                    <select cSelect id="inputRole-1" formControlName="role">
+                        <option [value]="role.value" *ngFor="let role of listRoles">{{role.name}}</option>
+                    </select>
+                </c-col>
+            </c-row>
+        </form>
+
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleEditUser()" cButton color="secondary">
+        Cancelar
+      </button>
+      <button [disabled]="saving" (click)="saveUser()" cButton color="primary">Guardar</button>
+    </c-modal-footer>
+  </c-modal>
+<c-modal id="deleteConfirmModal" [visible]="visibleDelete" (visibleChange)="handleDeleteConfirmChange($event)">
+    <c-modal-header>
+      <h5 cModalTitle>Borrar Usuario: {{userToDelete?.name}}</h5>
+      <button (click)="toggleDeleteModal()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+        <p>¿Estás seguro que deseas <strong>eliminar el usuario?</strong> Una vez realizado, no se podrá revertir.</p>
+
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleDeleteModal()" cButton color="secondary">
+        Cancelar
+      </button>
+      <button [disabled]="saving" (click)="deleteUser()" cButton color="primary">Eliminar</button>
+    </c-modal-footer>
+  </c-modal>
+
